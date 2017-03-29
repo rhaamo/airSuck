@@ -211,7 +211,6 @@ Vehicle.prototype.setIcon = function() {
     //  rotation: this.heading
     //});
       console.log("TODO2");
-      console.log(this.heading);
       newIcon = new L.PlaneIcon({color: '#f4ff01', idleCircle: false, course: this.heading});
       newIcon.setHeading(this.heading);
   } else {

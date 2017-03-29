@@ -63,8 +63,6 @@ L.PlaneIcon = L.Icon.extend({
 
 		ctx.translate(w/2, h/2);
 		ctx.rotate(this.options.course*Math.PI/180);
-		console.log("Rotate thing of");
-		console.log(this.options.course);
 		ctx.translate(-w/2, -h/2);
 
 		//ctx.fillRect(0,0,w,h);
