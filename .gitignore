@@ -1,4 +1,7 @@
-
+config.py
 node/nodeConfig.js
 
 node/node_modules/*
+
+**/*.pyc
+.idea
