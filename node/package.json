@@ -1,0 +1,22 @@
+{
+  "name": "airsuck",
+  "version": "1.0.0",
+  "description": "ADS-B/SSR and AIS processing, storage, and display",
+  "main": "stateNode.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^4.15.2",
+    "modern-syslog": "^1.1.4",
+    "redis": "^2.7.1",
+    "socket.io": "^1.7.3",
+    "socket.io-emitter": "2.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ThreeSixes/airSuck/"
+  },
+  "author": "ThreeSixes",
+  "license": "GPL-3.0"
+}
