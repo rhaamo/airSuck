@@ -134,8 +134,8 @@ Aircraft.prototype.createTableEntry = function() {
           <td class="tblCell" colspan=3>'+this.regAircraft+'</td>\
           </tr>';
   }
-  
-  $('#table-'+this.domName).children('tbody').append('\
+
+  $('#table-'+this.domName).append('\
     <tr id="'+this.addr+'-row-summary" class="vehicle-table-entry">\
       <td>'+this.name+'</td>\
       <td>'+((this.category==null) ? '--' : this.category)+'</td>\

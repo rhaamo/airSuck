@@ -79,7 +79,7 @@ Ship.prototype.createTableEntry = function() {
   }
   
   if (this.lat) {hasPos=true;}else{hasPos=false;}
-  $('#table-'+this.domName).children('tbody').append('\
+  $('#table-'+this.domName).append('\
     <tr id="'+this.addr+'-row-summary" class="vehicle-table-entry">\
       <td>'+((this.name==null) ? '--' : this.name)+'</td>\
       <td>'+((this.mmsiCC==null) ? '--' : this.mmsiCC)+'</td>\
