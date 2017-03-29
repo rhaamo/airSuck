@@ -263,6 +263,7 @@ Ship.prototype.updateTableEntry = function() {
  * OVERRIDES DEFAULT TO USE courseOverGnd
  **************************************************/
 Ship.prototype.setIcon = function() {
+  console.log("TODO AIS ICON");
    // If we have heading data for the vehicle
   if (this.courseOverGnd != null) {
     // Create our icon for a vehicle with heading data.

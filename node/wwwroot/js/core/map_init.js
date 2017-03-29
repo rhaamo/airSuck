@@ -1,25 +1,24 @@
 "use strict";// overcome current Chrome and Firefox issues with ECMA6 stuff like classes
 /***********************************************************
- * Airsuck Google Maps system setup
+ * Airsuck Maps system setup
  * v. 0.1
  *
  * Licensed under GPL V3
  * https://github.com/ThreeSixes/airSuck
  *
- * Deps: jQuery, GoogleMaps JS API loaded
+ * Deps: jQuery, Leaflet JS API loaded
  **********************************************************/
 
 /***************************************************
  * INITIALIZE MAPS
- * Only google at the moment
+ * Using Leaflet, no Google Map available
  **************************************************/
-// Initialize the Google map.
+// Initialize the map.
 function initMap() {
   if(debug){console.log("Maps loading...");}
   
   // Attempt to detect user location if turned on
   if (useLocation) {
-    //attempt to determine location
     $.ajax( { url: '//freegeoip.net/json/', type: 'POST', dataType: 'jsonp',
       success: function(location) {
         // update the lat and lng if we can detect them
@@ -31,18 +30,15 @@ function initMap() {
   }
   
   // Set up the map object.
-  map = new google.maps.Map(document.getElementById('map'), {
-    zoom: defaultZoom,
-    center: {lat: defaultLat, lng: defaultLng},
-    mapTypeControlOptions: {
-      style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-      mapTypeIds: [google.maps.MapTypeId.TERRAIN, google.maps.MapTypeId.SATELLITE]
-      },
-    mapTypeControl: false
-  });
+  map = new L.Map(document.getElementById('map')).setView([defaultLat, defaultLng], defaultZoom);
   
-  // Set default map to terrain.
-  map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
+  // Set default map Layer to Mapnik
+  map.addLayer(L.tileLayer.provider('OpenStreetMap.Mapnik'));
+
+  // Other usefull providers:
+    // OpenStreetMap.BlackAndWhite
+    // OpenTopoMap
+    // OpenSeaMap
  
   // Create the map style control div to override the default google maps control
   // DOM elements must be set as JS vars to pass through google maps functions
@@ -101,11 +97,11 @@ function initMap() {
     });
   
   // Load the custom controls through the map controls interface
-  map.controls[google.maps.ControlPosition.TOP_LEFT].push(styleControlContainer);
+  //map.controls[google.maps.ControlPosition.TOP_LEFT].push(styleControlContainer);
   
   // Set default map to monochrome.
-  map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
-  map.set('styles',customStyle);
+  //map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
+  //map.set('styles',customStyle);
   // Set the selectbox to monochrome
   styleSelectBox.options[2].selected = true;
   

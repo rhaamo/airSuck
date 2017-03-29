@@ -51,10 +51,10 @@ function expireVehicles() {
 function vehicleMarkerRightClickListener(vehName) {
   // Listener called from messages.js for access to vehicles array
   // Check to see if the path is visible and reverse the visiblity
-  if (vehicles[vehName].pathPoly.getVisible() == true) {
-    vehicles[vehName].pathPoly.setVisible(false);
+    if (map.hasLayer(vehicles[vehName].pathPoly) === true) {
+    map.removeLayer(vehicles[vehName].pathPoly);
   } else {
-    vehicles[vehName].pathPoly.setVisible(true);
+    map.addLayer(vehicles[vehName].pathPoly);
   }
 }
 
@@ -64,15 +64,15 @@ function vehicleMarkerClickListener(vehName) {
   // Info window functions, check if open and toggle
   if (vehicles[vehName].info.shown) {
     // Close it.
-    vehicles[vehName].info.close();
-    vehicles[vehName].info.setContent("");
-    vehicles[vehName].info.shown = false;
+      vehicles[vehName].info.setContent("");
+      map.removeLayer(vehicles[vehName].info);
+      vehicles[vehName].info.shown = false;
     // Hide the sidebar details
     $('#'+vehicles[vehName].addr+'-row-detail').toggle();
   } else {
     // Set data in case we don't have it, open it, and flag it as open.
     vehicles[vehName].info.setContent(vehicles[vehName].setInfoWindow());
-    vehicles[vehName].info.open(map, vehicles[vehName].marker);
+    vehicles[vehName].info.addTo(map);
     vehicles[vehName].info.shown = true;
     // Show the sidebar details
     $('#'+vehicles[vehName].addr+'-row-detail').toggle();
@@ -151,21 +151,9 @@ class Vehicle {
     this.vehColorActive = "#ff0000"; // Color of active vehicle icons (hex)
     this.vehColorInactive = "#660000"; // Color of nonresponsive vehicle icons (hex)
     this.vehColorSelected = "#ff00ff"; // Color of the vehicle icon when selected
-    this.marker = null; // Placeholder for the google maps marker
-    this.info = null; // Placeholder for the google maps info window
-    // gMap polygon path object
-    this.pathPoly = new google.maps.Polyline({
-      map: map,
-      clickable: false,
-      draggable: false,
-      editable: false,
-      geodesic: false,
-      strokeOpacity: pathStrokeOpacity,
-      strokeWeight: pathStrokeWeight,
-      visible: true,
-      zIndex: pathzIndex,
-      path: new google.maps.MVCArray()
-    })
+    this.marker = null; // Placeholder for the map marker
+    this.info = null; // Placeholder for the map info popup
+      this.pathPoly = new L.polyline([]).addTo(map);
   }
 }
 
@@ -183,25 +171,31 @@ Vehicle.prototype.parseName = function() {
  * OVERRIDE IF USING A DIFFERENT HEADING
  **************************************************/
 Vehicle.prototype.setIcon = function() {
-  let newIcon;
+  console.log("DONT CALL ME TODO");
+  return;
+  var newIcon;
   // If we have heading data for the vehicle
   if (this.heading != 'undefined') {
     // Create our icon for a vehicle with heading data.
-    newIcon = new google.maps.Marker({
-      path: this.dirIcoPath,
-      scale: this.dirIcoScale,
-      strokeWeight: 1.5,
-      strokeColor: (this.selected == true) ? this.vehColorSelected : ((this.active == true) ? this.vehColorActive : this.vehColorInactive),
-      rotation: this.heading
-    });
+    //newIcon = new google.maps.Marker({
+    //  path: this.dirIcoPath,
+    //  scale: this.dirIcoScale,
+    //  strokeWeight: 1.5,
+    //  strokeColor: (this.selected == true) ? this.vehColorSelected : ((this.active == true) ? this.vehColorActive : this.vehColorInactive),
+    //  rotation: this.heading
+    //});
+      console.log("TODO2");
+      newIcon = new L.icon();
   } else {
     // Create our icon for a vehicle without heading data.
-    newIcon = new google.maps.Marker({
-      path: this.ndIcoPath,
-      scale: this.ndIcoScale,
-      strokeWeight: 1.5,
-      strokeColor: (this.selected == true) ? this.vehColorSelected : ((this.active == true) ? this.vehColorActive : this.vehColorInactive)
-    });
+    //newIcon = new google.maps.Marker({
+    //  path: this.ndIcoPath,
+    //  scale: this.ndIcoScale,
+    //  strokeWeight: 1.5,
+    //  strokeColor: (this.selected == true) ? this.vehColorSelected : ((this.active == true) ? this.vehColorActive : this.vehColorInactive)
+    //});
+      console.log("TODO3");
+      newIcon = new L.icon();
   }
   // And return it.
   return newIcon;
@@ -212,19 +206,17 @@ Vehicle.prototype.setIcon = function() {
  **************************************************/
 Vehicle.prototype.setMarker = function() {
   // Create our marker.
-  this.marker = new google.maps.Marker({
-    position: new google.maps.LatLng(this.lat, this.lon),
-    icon: this.setIcon(),
-    map: map,
-    vehName: this.addr
-  });
-  
+    console.log("TODO4 also set icon: .setIcon()");
+    this.marker = new L.marker(new L.LatLng(this.lat, this.lon), {
+      vehName: this.addr
+    }).addTo(map);
+
   // Create our info window
   this.setInfoWindow();
   
   // Can't set the listeners here, scoping doesn't allow
   // access to the vehicles array.
-}
+};
 
 /***************************************************
  * FUNCTION CREATES VEHICLE ICONS FOR GMAPS
@@ -239,13 +231,13 @@ Vehicle.prototype.setMarkerSelected = function() {
   
   // use the move function to update the icon
   this.movePosition();
-}
+};
 Vehicle.prototype.setMarkerHover = function() {
   // set the selected flag
   this.selected = true;
   // use the move function to update the icon
   this.movePosition();
-}
+};
 Vehicle.prototype.setMarkerUnselected = function() {
   // set the selected flag
   this.selected = false;
@@ -255,7 +247,7 @@ Vehicle.prototype.setMarkerUnselected = function() {
 
   // use the move function to update the icon
   this.movePosition();
-}
+};
 
 /***************************************************
  * FUNCTION MOVES THE VEHICLE MARKER AND INFO POSITIONS
@@ -263,37 +255,42 @@ Vehicle.prototype.setMarkerUnselected = function() {
 Vehicle.prototype.movePosition = function() {
     // Figure out where we are in 2D space
     let thisPos = this.lat + "," + this.lon;
-    
     // Update the path object with the new position
     // copy the path object
-    let pathObject = this.pathPoly.getPath();
+    let pathObject = this.pathPoly.getLatLngs();
     // update with the new path
-    pathObject.push(new google.maps.LatLng(this.lat, this.lon));
+    pathObject.push(new L.LatLng(this.lat, this.lon));
     // push back to the polyline
-    this.pathPoly.setPath(pathObject);
+    this.pathPoly.setLatLngs(pathObject);
     // set the polyline color
-    this.pathPoly.setOptions({strokeColor: this.stkColor});
+    this.pathPoly.setStyle({color: this.stkColor});
     
     // Update the marker
     // Modify the icon to have the correct rotation, and to indicate there is bearing data.
-    this.marker.setIcon(this.setIcon());
+    console.log("TODO FIXME set icon w/ bearing rotation");
+    //this.marker.setIcon(this.setIcon());
     // Move the marker.
-    this.marker.setPosition(new google.maps.LatLng(this.lat, this.lon));
-    
+    this.marker.setLatLng(new L.LatLng(this.lat, this.lon));
+
+    // also update popup info if opened
+    if (this.info.shown === true) {
+        this.info.setLatLng(new L.LatLng(this.lat, this.lon));
+        this.info.update();
+    }
+
     // Record the new position for testing on next update
     this.lastPos = thisPos;
 };
 
 /***************************************************
- * FUNCTION ADDS A GMAPS INFO WINDOW TO THE VEHICLE
+ * FUNCTION ADDS A MAPS INFO WINDOW TO THE VEHICLE
  **************************************************/
 Vehicle.prototype.setInfoWindow = function() {
   // Create our info window.
-  this.info = new google.maps.InfoWindow({
-    position:new google.maps.LatLng(this.lat, this.lon),
-    content: this.parseName(),
-    shown: false
-  });
+    this.info = new L.popup({
+        shown: false,
+        offset: new L.point(0, -35) // Add little offset to be on top of the marker icon
+    }).setLatLng(new L.LatLng(this.lat, this.lon)).setContent(this.parseName());
 };
 
 /***************************************************
@@ -303,7 +300,6 @@ Vehicle.prototype.setInfoWindow = function() {
  **************************************************/
 Vehicle.prototype.updateTableEntry = function(){
   if (debug){console.log('Error: Function updateTableEntry not set for protocol: '+this.protocol);}
-  return;
 };
 
 Vehicle.prototype.update = function(msgJSON){
@@ -366,9 +362,12 @@ Vehicle.prototype.destroy = function(){
   $('#'+this.addr+'-row-detail').remove();
   
   // Default destructor processes
-  if(this.info != null){this.info.close();}// close the gMap info window
-  this.pathPoly.setMap(null);// turn off the path
-  this.marker.setMap(null);// remove the icon from the map
+  if(this.info != null){
+    map.removeLayer(this.info);
+  }// close the gMap info window
+
+    map.removeLayer(this.pathPoly);
+    map.removeLayer(this.marker);
   //vehicles[this.addr] = null;// invalidate this object, can't fully delete since its gone in ECMAScript 6...
 };
 
@@ -379,7 +378,8 @@ Vehicle.prototype.setHalflife = function(){
   // Deactivate vehicle and change the icon for it.
   this.active = false;
   // Set the icon.
-  if(this.marker!=null){this.marker.setIcon(this.setIcon());}
+    console.log("TODO FIXME set icon for idle / greyed");
+  //if(this.marker!=null){this.marker.setIcon(this.setIcon());}
 };
 
 /***************************************************

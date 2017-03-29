@@ -33,6 +33,10 @@
   opacity: 0.85;
 }
 
+.dbgActive {
+  z-index: 9999;
+}
+
 html, body {
   height: 100%;
   margin: 0;

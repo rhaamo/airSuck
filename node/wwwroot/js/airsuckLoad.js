@@ -24,8 +24,8 @@ var sidebarLoaded = false;
 // Load config options
 $.getScript("js/config.js",function(){
    if (debug) {
-     //debug set, create the screen debug elements
-     $('body').append('<form><input type="text" class="dbgBx" id="debugBx" value="Debug stream..." /><input type="text" class="msgBx" id="message" value="Waiting for message data..." /></form>');
+     $('.dbgBx').addClass('dbgActive');
+     $('.msgBx').addClass('dbgActive');
    }
    // set the html object ID for sending on-screen debug and messages
    window.debugBx = 'debugBx';//name of the debug input ID
@@ -87,6 +87,7 @@ $.getScript("socket.io/socket.io.js",function(){
  * SETUP AND LOAD MAPS
  **************************************************/
 $(document).ready(function(){
+    console.log("Document ready.");
     // Load RainbowVis to color vehicle paths by height
     $.getScript("js/plugins/rainbowvis.js",function(){
         // Instanciate RainbowVis and set global color ramp by plane height
@@ -94,11 +95,11 @@ $(document).ready(function(){
         polyRamp.setNumberRange(minimumAltitude,maximumAltitude);
         polyRamp.setSpectrum(spectrum[0], spectrum[1], spectrum[2], spectrum[3]);
     });
-    // Load the mapping system (Google only at the moment)
-    $.getScript("https://maps.googleapis.com/maps/api/js?&callback=initMap&signed_in=true");
-    // Global Google Maps objects are global. :)
-      window.map = null;
-      window.mapLoaded = false;
-      window.vehData = {};// Create a generic array to hold our vehicle data
-    $.getScript("js/core/gmap_init.js");//Initialize Gmaps by loading the initMap function
+    // Global Maps objects are global. :)
+    window.map = null;
+    window.mapLoaded = false;
+    window.vehData = {}; // Create a generic array to hold our vehicle data
+    $.getScript("js/core/map_init.js", function() {
+        initMap();
+    }); // Load and init the map
 });

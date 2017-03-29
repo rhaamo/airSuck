@@ -8,7 +8,7 @@
  *
  * Handles socket.io messages for vehicle data coming from node
  *
- * Deps: jQuery, vehicles.js, google maps initialized
+ * Deps: jQuery, vehicles.js, leaflet maps initialized
  **********************************************************/
 
 /***************************************************
@@ -56,11 +56,12 @@ function handleMessage(msg){
         vehicles[vehName].setMarker();
         
         // Add listeners to marker - must be here to access the vehicles array
-        vehicles[vehName].marker.addListener('click', function() {
+        vehicles[vehName].marker.on('click', function() {
           vehicleMarkerClickListener(vehName);
         });
-        vehicles[vehName].marker.addListener('rightclick', function() {
+        vehicles[vehName].marker.on('contextmenu', function() {
           vehicleMarkerRightClickListener(vehName);
+          return false; // cancel browser context menu popup
         });
         break;
       } else if (index==length) {
