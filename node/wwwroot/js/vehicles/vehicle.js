@@ -166,16 +166,42 @@ Vehicle.prototype.parseName = function() {
   return this.addr.toUpperCase();
 };
 
+/*
+ * Vehicle 'PLANE' icon definition
+ */
+Vehicle.prototype.drawPlane = function(icon, type) {
+  if (type === 'icon') {
+    let ctx = icon.getContext('2d');
+    ctx.beginPath();
+    ctx.moveTo(109.375000, 307.375000);
+    ctx.lineTo(109.375000, 279.375000);
+    ctx.lineTo(139.375000, 255.375000);
+    ctx.lineTo(139.375000, 183.375000);
+    ctx.lineTo(6.375000, 227.375000);
+    ctx.lineTo(6.375000, 192.375000);
+    ctx.lineTo(138.375000, 112.375000);
+    ctx.lineTo(138.375000, 14.375000);
+    ctx.bezierCurveTo(138.375000, -6.625000, 172.375000, -6.625000, 172.375000, 14.375000);
+    ctx.lineTo(172.375000, 112.375000);
+    ctx.lineTo(306.375000, 192.375000);
+    ctx.lineTo(306.375000, 227.375000);
+    ctx.lineTo(173.375000, 184.375000);
+    ctx.lineTo(173.375000, 255.375000);
+    ctx.lineTo(203.375000, 279.375000);
+    ctx.lineTo(203.375000, 307.375000);
+    ctx.lineTo(156.375000, 292.375000);
+  }
+
+};
+
 /***************************************************
  * FUNCTION CREATES VEHICLE ICONS FOR GMAPS
  * OVERRIDE IF USING A DIFFERENT HEADING
  **************************************************/
 Vehicle.prototype.setIcon = function() {
-  console.log("DONT CALL ME TODO");
-  return;
   var newIcon;
   // If we have heading data for the vehicle
-  if (this.heading != 'undefined') {
+  if (this.heading) {
     // Create our icon for a vehicle with heading data.
     //newIcon = new google.maps.Marker({
     //  path: this.dirIcoPath,
@@ -185,7 +211,9 @@ Vehicle.prototype.setIcon = function() {
     //  rotation: this.heading
     //});
       console.log("TODO2");
-      newIcon = new L.icon();
+      console.log(this.heading);
+      newIcon = new L.PlaneIcon({color: '#f4ff01', idleCircle: false, course: this.heading});
+      newIcon.setHeading(this.heading);
   } else {
     // Create our icon for a vehicle without heading data.
     //newIcon = new google.maps.Marker({
@@ -195,7 +223,7 @@ Vehicle.prototype.setIcon = function() {
     //  strokeColor: (this.selected == true) ? this.vehColorSelected : ((this.active == true) ? this.vehColorActive : this.vehColorInactive)
     //});
       console.log("TODO3");
-      newIcon = new L.icon();
+      newIcon = new L.PlaneIcon({color: '#f4ff01', idleCircle: false});
   }
   // And return it.
   return newIcon;
@@ -268,7 +296,7 @@ Vehicle.prototype.movePosition = function() {
     // Update the marker
     // Modify the icon to have the correct rotation, and to indicate there is bearing data.
     console.log("TODO FIXME set icon w/ bearing rotation");
-    //this.marker.setIcon(this.setIcon());
+    this.marker.setIcon(this.setIcon());
     // Move the marker.
     this.marker.setLatLng(new L.LatLng(this.lat, this.lon));
 
@@ -379,7 +407,7 @@ Vehicle.prototype.setHalflife = function(){
   this.active = false;
   // Set the icon.
     console.log("TODO FIXME set icon for idle / greyed");
-  //if(this.marker!=null){this.marker.setIcon(this.setIcon());}
+  if(this.marker!=null){this.marker.setIcon(this.setIcon());}
 };
 
 /***************************************************
