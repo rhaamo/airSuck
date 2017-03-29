@@ -31,78 +31,25 @@ function initMap() {
   
   // Set up the map object.
   map = new L.Map(document.getElementById('map')).setView([defaultLat, defaultLng], defaultZoom);
-  
-  // Set default map Layer to Mapnik
-  map.addLayer(L.tileLayer.provider('OpenStreetMap.Mapnik'));
 
-  // Other usefull providers:
-    // OpenStreetMap.BlackAndWhite
-    // OpenTopoMap
-    // OpenSeaMap
- 
-  // Create the map style control div to override the default google maps control
-  // DOM elements must be set as JS vars to pass through google maps functions
-  // Set up the main style control container
-  var styleControlContainer = document.createElement('div');
-  styleControlContainer.id = 'mapStyleBox';
-  styleControlContainer.className = 'mapControlStyle';
-  styleControlContainer.index = 1000;
-  
-  // Create a select box container
-  var styleSelectBox = document.createElement('select');
-  styleSelectBox.className = 'mapStyleSelector';
-  
-  // Set up the map style options
-  var terrainMap = document.createElement('option');
-  terrainMap.className = 'mapStyleSelector';
-  terrainMap.value = 'Terrain';
-  terrainMap.innerHTML = 'Terrain';
-  var satelliteMap = document.createElement('option');
-  satelliteMap.className = 'mapStyleSelector';
-  satelliteMap.value = 'Satellite';
-  satelliteMap.innerHTML = 'Satellite';
-  var customMap = document.createElement('option');
-  customMap.className = 'mapStyleSelector';
-  customMap.value = customStyleName;
-  customMap.innerHTML = customStyleName;
-  
-  // Add the style options to the main style control container
-  styleControlContainer.appendChild(styleSelectBox);
-  styleSelectBox.appendChild(terrainMap);
-  styleSelectBox.appendChild(satelliteMap);
-  styleSelectBox.appendChild(customMap);
-  
-  // Add a listener to change the map type via the select box
-  styleSelectBox.addEventListener('change',function(e){
-      switch (this.value) {
-        case "Terrain":
-          // load the terrain map and clear any style overrides
-          map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
-          map.set('styles',null);
-          break;
-        case "Satellite":
-          // load the satellite map and clear any style overrides
-          map.setMapTypeId(google.maps.MapTypeId.SATELLITE);
-          map.set('styles',null);
-          break;
-        case customStyleName:
-          // load the terrain map and add a custom style
-          map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
-          map.set('styles',customStyle);
-          break;
-        default:
-          map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
-          map.set('styles',null);
-      }
-    });
-  
-  // Load the custom controls through the map controls interface
-  //map.controls[google.maps.ControlPosition.TOP_LEFT].push(styleControlContainer);
-  
-  // Set default map to monochrome.
-  //map.setMapTypeId(google.maps.MapTypeId.TERRAIN);
-  //map.set('styles',customStyle);
-  // Set the selectbox to monochrome
+  provider = L.tileLayer.provider('OpenStreetMap.BlackAndWhite');
+
+  // Set default map Layer to Mapnik
+  map.addLayer(provider);
+
+  let baseLayers = {
+    "Black and White": L.tileLayer.provider("OpenStreetMap.BlackAndWhite"),
+    "OpenTopo": L.tileLayer.provider('OpenTopoMap'),
+    "OpenStreetMap": L.tileLayer.provider('OpenStreetMap.Mapnik')
+  };
+
+  let overlays = {
+    "OpenSeaMap": L.tileLayer.provider('OpenSeaMap')
+  };
+
+  L.control.layers(baseLayers, overlays).addTo(map);
+
+  // Set the selectbox to OpenStreetMap.BlackAndWhite
   styleSelectBox.options[2].selected = true;
   
   // The map loaded.

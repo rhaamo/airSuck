@@ -97,6 +97,7 @@ $(document).ready(function(){
     });
     // Global Maps objects are global. :)
     window.map = null;
+    window.provider = null;
     window.mapLoaded = false;
     window.vehData = {}; // Create a generic array to hold our vehicle data
     $.getScript("js/core/map_init.js", function() {
