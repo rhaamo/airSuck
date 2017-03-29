@@ -28,30 +28,30 @@ function initMap() {
       }
     } );
   }
-  
-  // Set up the map object.
-  map = new L.Map(document.getElementById('map')).setView([defaultLat, defaultLng], defaultZoom);
 
-  provider = L.tileLayer.provider('OpenStreetMap.BlackAndWhite');
-
-  // Set default map Layer to Mapnik
-  map.addLayer(provider);
-
+  // Setup layers
   let baseLayers = {
     "Black and White": L.tileLayer.provider("OpenStreetMap.BlackAndWhite"),
+    "OpenStreetMap": L.tileLayer.provider('OpenStreetMap.Mapnik'),
     "OpenTopo": L.tileLayer.provider('OpenTopoMap'),
-    "OpenStreetMap": L.tileLayer.provider('OpenStreetMap.Mapnik')
+    "Stamen Terrain": L.tileLayer.provider('Stamen.Terrain'),
+    "Esri Ocean Basemap": L.tileLayer.provider('Esri.OceanBasemap')
   };
 
-  let overlays = {
+  let overlaysLayers = {
     "OpenSeaMap": L.tileLayer.provider('OpenSeaMap')
   };
 
-  L.control.layers(baseLayers, overlays).addTo(map);
+  layers = Object.assign({}, baseLayers, overlaysLayers);
 
-  // Set the selectbox to OpenStreetMap.BlackAndWhite
-  styleSelectBox.options[2].selected = true;
-  
+  // Set up the map object.
+  map = new L.Map(document.getElementById('map')).setView([defaultLat, defaultLng], defaultZoom);
+  map.addLayer(layers["Black and White"]);
+  map.addLayer(layers["OpenSeaMap"]);
+
+  // Add layers control
+  L.control.layers(baseLayers, overlaysLayers).addTo(map);
+
   // The map loaded.
   mapLoaded = true;
 }
