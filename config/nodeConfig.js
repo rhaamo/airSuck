@@ -19,4 +19,4 @@ exports.getConfig = function() {
             redisQueue: "airSuckStatePub" // Name of the pub/sub queue.
         }
     };
-}
+};
