@@ -262,27 +262,17 @@ Ship.prototype.updateTableEntry = function() {
  * FUNCTION SETS THE VEHICLE ICON
  * OVERRIDES DEFAULT TO USE courseOverGnd
  **************************************************/
-Ship.prototype.setIcon = function() {
-  console.log("TODO AIS ICON");
+Ship.prototype.createIcon = function() {
+    var newIcon;
    // If we have heading data for the vehicle
-  if (this.courseOverGnd != null) {
+  if (this.courseOverGnd) {
     // Create our icon for a vehicle with heading data.
-    var newIcon = new google.maps.Marker({
-      path: this.dirIcoPath,
-      scale: this.dirIcoScale,
-      strokeWeight: 1.5,
-      strokeColor: (this.selected == true) ? this.vehColorSelected : ((this.active == true) ? this.vehColorActive : this.vehColorInactive),
-      rotation: this.courseOverGnd
-    });
+      newIcon = new L.BoatIcon({color: '#f4ff01', idleCircle: false, course: this.courseOverGnd});
+      newIcon.setHeading(this.courseOverGnd);
   } else {
     // Create our icon for a vehicle without heading data.
-    var newIcon = new google.maps.Marker({
-      path: this.ndIcoPath,
-      scale: this.ndIcoScale,
-      strokeWeight: 1.5,
-      strokeColor: (this.selected == true) ? this.vehColorSelected : ((this.active == true) ? this.vehColorActive : this.vehColorInactive)
-    });
+      newIcon = new L.BoatIcon({color: '#f4ff01', idleCircle: false});
   }
-  // And return it.
+
   return newIcon;
-}
+};
