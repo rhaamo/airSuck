@@ -16,4 +16,4 @@ my idea is that at some point the marker isn't created because of lat/lon missin
  selected yellow
  idle grey
 
-- Expiration timer doesn't delete old AIS objects ?
+- Expiration timer: grey-ish old markers before deletion
