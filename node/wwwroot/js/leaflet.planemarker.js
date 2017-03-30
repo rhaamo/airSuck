@@ -11,7 +11,7 @@ L.PlaneIcon = L.Icon.extend({
 
 	// OPTIONS
 	options: {
-		iconSize: new L.Point(150, 150),
+		iconSize: new L.Point(100, 100),
 		className: "leaflet-plane-icon",
 		course: 0,
 		speed: 0,
