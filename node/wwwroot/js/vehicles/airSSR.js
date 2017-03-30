@@ -236,7 +236,8 @@ Aircraft.prototype.createTableEntry = function() {
 Aircraft.prototype.updateTableEntry = function() {
   if (debug) {console.log('Updating table entry for aircraft: '+this.addr+' in table: #table-' + this.domName);}
   let hasPos;
-  if (this.lat) {hasPos=true;}else{hasPos=false;}
+  hasPos = !!this.lat;
+
   // update the summary
   $('#'+this.addr+'-row-summary').html('\
     <td>'+this.parseName()+'</td>\

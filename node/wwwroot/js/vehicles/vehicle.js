@@ -198,7 +198,7 @@ Vehicle.prototype.drawPlane = function(icon, type) {
  * FUNCTION CREATES VEHICLE ICONS FOR GMAPS
  * OVERRIDE IF USING A DIFFERENT HEADING
  **************************************************/
-Vehicle.prototype.setIcon = function() {
+Vehicle.prototype.createIcon = function() {
   var newIcon;
   // If we have heading data for the vehicle
   if (this.heading) {
@@ -235,7 +235,8 @@ Vehicle.prototype.setMarker = function() {
   // Create our marker.
     console.log("TODO4 also set icon: .setIcon()");
     this.marker = new L.marker(new L.LatLng(this.lat, this.lon), {
-      vehName: this.addr
+      vehName: this.addr,
+        icon: this.createIcon()
     }).addTo(map);
 
   // Create our info window
@@ -280,33 +281,45 @@ Vehicle.prototype.setMarkerUnselected = function() {
  * FUNCTION MOVES THE VEHICLE MARKER AND INFO POSITIONS
  **************************************************/
 Vehicle.prototype.movePosition = function() {
-    // Figure out where we are in 2D space
-    let thisPos = this.lat + "," + this.lon;
-    // Update the path object with the new position
-    // copy the path object
-    let pathObject = this.pathPoly.getLatLngs();
-    // update with the new path
-    pathObject.push(new L.LatLng(this.lat, this.lon));
-    // push back to the polyline
-    this.pathPoly.setLatLngs(pathObject);
-    // set the polyline color
-    this.pathPoly.setStyle({color: this.stkColor});
-    
-    // Update the marker
-    // Modify the icon to have the correct rotation, and to indicate there is bearing data.
-    console.log("TODO FIXME set icon w/ bearing rotation");
-    this.marker.setIcon(this.setIcon());
-    // Move the marker.
-    this.marker.setLatLng(new L.LatLng(this.lat, this.lon));
+  console.log(this);
 
-    // also update popup info if opened
-    if (this.info.shown === true) {
-        this.info.setLatLng(new L.LatLng(this.lat, this.lon));
-        this.info.update();
+  // We can do this only if we have a non-null non-undefined lat and lon
+    if (this.lat && this.lon) {
+      console.log(this);
+        // Figure out where we are in 2D space
+        let thisPos = this.lat + "," + this.lon;
+        // Update the path object with the new position
+        // copy the path object
+        let pathObject = this.pathPoly.getLatLngs();
+        // update with the new path
+        pathObject.push(new L.LatLng(this.lat, this.lon));
+        // push back to the polyline
+        this.pathPoly.setLatLngs(pathObject);
+        // set the polyline color
+        this.pathPoly.setStyle({color: this.stkColor});
+
+        // Update the marker
+        // Modify the icon to have the correct rotation, and to indicate there is bearing data.
+        console.log("TODO FIXME set icon w/ bearing rotation");
+        console.log(this.marker);
+        console.log(this);
+        this.marker.setIcon(this.createIcon());
+        // Move the marker.
+        this.marker.setLatLng(new L.LatLng(this.lat, this.lon));
+
+        // also update popup info if opened
+        if (this.info.shown === true) {
+            this.info.setLatLng(new L.LatLng(this.lat, this.lon));
+            this.info.update();
+        }
+
+        // Record the new position for testing on next update
+        this.lastPos = thisPos;
+    } else {
+        if (debug) {
+            console.log("movePosition: Cannot move marker without lat/lon for: " + this.addr);
+        }
     }
-
-    // Record the new position for testing on next update
-    this.lastPos = thisPos;
 };
 
 /***************************************************
@@ -382,19 +395,26 @@ Vehicle.prototype.zerofill = function(number, numberOfDigits){
  * VEHICLE DESTRUCTOR
  **************************************************/
 Vehicle.prototype.destroy = function(){
-  if(debug){console.log('Destroying vehicle: ' + this.parseName());}
-  
-  // Remove table entries
-  $('#'+this.addr+'-row-summary').remove();
-  $('#'+this.addr+'-row-detail').remove();
-  
-  // Default destructor processes
-  if(this.info != null){
-    map.removeLayer(this.info);
-  }// close the gMap info window
+    if(debug){
+      console.log('Destroying vehicle: ' + this.parseName());
+    }
 
-    map.removeLayer(this.pathPoly);
-    map.removeLayer(this.marker);
+    // Remove table entries
+    $('#'+this.addr+'-row-summary').remove();
+    $('#'+this.addr+'-row-detail').remove();
+  
+    // Default destructor processes
+    if(this.info !== null){
+      map.removeLayer(this.info);
+    }
+
+    if (map.hasLayer(this.pathPoly)) {
+        map.removeLayer(this.pathPoly);
+    }
+
+    if (map.hasLayer(this.marker)) {
+        map.removeLayer(this.marker);
+    }
   //vehicles[this.addr] = null;// invalidate this object, can't fully delete since its gone in ECMAScript 6...
 };
 
@@ -406,7 +426,9 @@ Vehicle.prototype.setHalflife = function(){
   this.active = false;
   // Set the icon.
     console.log("TODO FIXME set icon for idle / greyed");
-  if(this.marker!=null){this.marker.setIcon(this.setIcon());}
+  if(this.marker) {
+    this.marker.setIcon(this.createIcon());
+  }
 };
 
 /***************************************************
