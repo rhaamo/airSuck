@@ -10,3 +10,10 @@ because this.marker is null / not created
 my idea is that at some point the marker isn't created because of lat/lon missing.
 
 - AIS doesn't have an icon yet
+
+- Panel SSR click on plane row doesn't close
+
+- Change fill colors of markers
+ active blue
+ selected yellow
+ idle grey
